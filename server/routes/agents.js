@@ -100,6 +100,7 @@ agentRoutes.route("/auth/login").post(async function (req, response) {
       response.status(404).json({})
     }
     else if (res.password === req.body.password) {
+
       response.status(200).json({access_token: accessToken})
     }
     else {
@@ -129,6 +130,8 @@ function authenticateToken (req, res, next) {
     next();
   });
 }
+
+
 
  
 module.exports = agentRoutes;

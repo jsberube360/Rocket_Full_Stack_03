@@ -1,16 +1,19 @@
 import React, { useState } from "react";
+import Alert from "./alert"
 import { useNavigate } from "react-router";
 export default function Login() {
     const [form, setForm] = useState({
         email: "",
         password: "",
     });
+    const [loginState, setLoginState]  = useState ("undefined")
     // These methods will update the state properties.
     function updateForm(value) {
         return setForm((prev) => {
         return { ...prev, ...value };
         });
     }
+
     const navigate = useNavigate();
     async function onSubmit (e) {
         e.preventDefault()
@@ -21,26 +24,26 @@ export default function Login() {
             },
             body: JSON.stringify(form),
           });
-        console.log(response)
         if (response.status === 200) {
             const token = await response.json()
             localStorage.setItem("token", token["access_token"])
-            navigate("/admin")
+            setLoginState ("success")
+            
         }
         else if (response.status === 401) {
-            window.alert("Invalid password");
+            setLoginState ("fail")
         }
         else if (response.status === 404) {
             navigate("/unauthorized")
         }
     }
     
-   
-
     // This following section will display the form that takes input from the user to update the data.
     return (
         <div>
-            <h3 style={{textAlign: "center"}}>Login</h3>
+            {loginState === "success" && <Alert message="Successfully connected! You will be redirected shortly!" variant="success" duration={3000}/>}
+            {loginState === "fail" && <Alert message="Invalid password" variant="danger" duration={5000} />}
+            <h3 style={{ textAlign: "center" }}>Login</h3>
             <form onSubmit={onSubmit}>
                 <div className="form-group">
                     <label htmlFor="email">Email</label>

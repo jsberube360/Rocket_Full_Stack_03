@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router";
+import Alert from "./alert";
 export default function Create() {
   const [form, setForm] = useState({
     first_name: "",
@@ -10,7 +10,7 @@ export default function Create() {
     fee: 0,
     sales: 0,
   });
-  const navigate = useNavigate();
+  const [creationState, setCreationState] = useState("undefined")
   // These methods will update the state properties.
   function updateForm(value) {
     return setForm((prev) => {
@@ -30,15 +30,18 @@ export default function Create() {
       body: JSON.stringify(newAgent),
     })
       .catch(error => {
-        window.alert(error);
+        setCreationState("fail")
+        console.log(error)
         return;
       });
     setForm({ first_name: "", last_name: "", email: "", region: "", rating: 0, fee: 0, sales: 0, });
-    navigate("/admin");
+    setCreationState("success")
   }
   // This following section will display the form that takes the input from the user.
   return (
     <div>
+      {creationState === "success" && <Alert message="You successfully created a new agent! You will be redirected shortly!" variant="success" duration={3000} />}
+      {creationState === "fail" && <Alert message="There was a problem creating the new agent" variant="danger" duration={5000} />}
       <h3 style={{ textAlign: "center" }}>Create New Agent</h3>
       <form onSubmit={onSubmit}>
         <div className="form-group">
