@@ -41,16 +41,18 @@ export default function Login() {
     // This following section will display the form that takes input from the user to update the data.
     return (
         <div>
+            <hr style={{ margin: "0px auto", width:"100%", borderWidth: "3px" , color: "#0a65a0" }}/>
             {loginState === "success" && <Alert message="Successfully connected! You will be redirected shortly!" variant="success" duration={3000}/>}
             {loginState === "fail" && <Alert message="Invalid password" variant="danger" duration={5000} />}
-            <h3 style={{ textAlign: "center" }}>Login</h3>
-            <form onSubmit={onSubmit}>
-                <div className="form-group">
+            <h3 style={{ textAlign: "center", color:"#0a65a0" }}>Login</h3>
+            <form onSubmit={onSubmit} style={{ textAlign: "center"}} >
+                <div className="form-group" >
                     <label htmlFor="email">Email</label>
                     <input
                         type="text"
                         className="form-control"
                         id="email"
+                        style={{ width:"40%", textAlign: 'center', margin: '0 auto'}}
                         value={form.email}
                         onChange={(e) => updateForm({ email: e.target.value })}
                     />
@@ -61,6 +63,7 @@ export default function Login() {
                         type="password"
                         className="form-control"
                         id="password"
+                        style={{ width:"40%", textAlign: 'center', margin: '0 auto'}}
                         value={form.password}
                         onChange={(e) => updateForm({ password: e.target.value })}
                     />

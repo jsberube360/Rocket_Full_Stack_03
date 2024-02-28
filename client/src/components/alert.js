@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from 'react-router-dom';
 import Alert from 'react-bootstrap/Alert';
 
-const CustomAlert = ({ duration, variant, message }) => {
+const CustomAlert = ({ duration, variant, message, onClose }) => {
     const [showAlert, setShowAlert] = useState(true);
-    const navigate = useNavigate();
 
     useEffect(() => {
         if (duration === undefined) {
@@ -12,13 +10,13 @@ const CustomAlert = ({ duration, variant, message }) => {
         }
         const timer = setTimeout(() => {
             setShowAlert(false);
-            if (variant === "success" && message !=="You successfully deleted an agent!") {
-                navigate("/admin");
+            if (onClose) {
+                onClose()
             }
         }, duration);
 
         return () => clearTimeout(timer);
-    }, [duration, variant, message, navigate]);
+    }, [duration, variant, message, onClose]);
 
     return (
         <>

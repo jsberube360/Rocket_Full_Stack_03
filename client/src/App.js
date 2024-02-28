@@ -4,8 +4,9 @@ import React from 'react';
 import { Route, Routes, useLocation } from "react-router-dom";
  // We import all the components we need in our app
 import Navbar from "./components/navbar";
-import Login from "./components/login"
-import RecordList from "./components/agentList";
+import Login from "./components/login";
+import Admin from "./components/admin"
+import AgentList from "./components/agentList";
 import Edit from "./components/edit";
 import Create from "./components/create";
 import UnauthorizedPage from "./components/unauthorized";
@@ -26,8 +27,9 @@ const App = () => {
       <Navbar />
       <Routes>
         <Route exact path="/" element={<StaticHTML />} />
+        <Route exact path="/admin" element={<Admin />} />
         <Route exact path="/authenticate" element={<Login />} />
-        <Route exact path="/admin" element={<RecordList />} />
+        <Route path="/admin/list" element={<AgentList />} />
         <Route path="/admin/edit/:id" element={<Edit />} />
         <Route path="/admin/create" element={<Create />} />
         <Route path="/unauthorized" element={<UnauthorizedPage />} />

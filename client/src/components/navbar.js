@@ -27,17 +27,6 @@ export default function Navbar() {
           >
             <span className="navbar-toggler-icon"></span>
           </button>
-          <div className="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul className="navbar-nav mr-auto">
-              {location.pathname !== "/authenticate" && location.pathname !== "/unauthorized" && (
-                <li className="nav-item">
-                  <NavLink className="nav-link" to="/admin/create">
-                    Create Agent
-                  </NavLink>
-                </li>
-              )}
-            </ul>
-          </div>
         </nav>
       </div>
     );

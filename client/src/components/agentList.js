@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
+import Button from 'react-bootstrap/Button';
 import Alert from "./alert";
 import Modal from './modal';
 const Agent = (props) => {
@@ -10,15 +12,19 @@ const Agent = (props) => {
   const handleCloseModal = () => {
     setShowModal(false);
   };
+  const modalDeleteAgent = () => {
+    props.deleteAgent ()
+    handleCloseModal()
+  }
   return (
     <tr>
-      <Modal 
-        showModal={showModal} 
-        handleClose={handleCloseModal} 
-        message="Are you sure you want to delete this agent?" 
-        title="Delete agent" 
-        action="Confirm deletion" 
-        handleAction= { props.deleteAgent } 
+      <Modal
+        showModal={showModal}
+        handleClose={handleCloseModal}
+        message="Are you sure you want to delete this agent?"
+        title="Delete agent"
+        action="Confirm deletion"
+        handleAction={modalDeleteAgent}
       />
       <td>{props.agent.first_name}</td>
       <td>{props.agent.last_name}</td>
@@ -41,10 +47,12 @@ const Agent = (props) => {
   );
 }
 const headers = { "authorization": "Bearer " + localStorage.getItem("token") }
+
 export default function AgentsList() {
   const [agents, setAgents] = useState([]);
   const [deleteState, setDeleteState] = useState("undefined")
-  
+  const navigate = useNavigate();
+
   // This method fetches the records from the database.
   useEffect(() => {
     async function getAgents() {
@@ -65,19 +73,20 @@ export default function AgentsList() {
   }, [agents.length]);
   // This method will delete a record
   async function deleteAgent(id) {
-    setDeleteState("undefined")
-    await fetch(`http://localhost:5000/agents/${id}`, {
-      method: "DELETE",
-      headers: headers,
-    })
-    .catch(error => {
+    try {
+      await fetch(`http://localhost:5000/agents/${id}`, {
+        method: "DELETE",
+        headers: headers,
+      })
+      const newAgents = agents.filter((el) => el._id !== id);
+      setDeleteState("success")
+      setAgents(newAgents);
+    }
+
+    catch (error) {
       setDeleteState("fail")
       console.log(error)
-      return;
-    });
-    const newAgents = agents.filter((el) => el._id !== id);
-    setDeleteState("success")
-    setAgents(newAgents);
+    }
   }
   // This method will map out the agents on the table
   function agentList() {
@@ -94,10 +103,11 @@ export default function AgentsList() {
   // This following section will display the table with the agents.
   return (
     <div>
-      {deleteState === "success" && <Alert message="You successfully deleted an agent!" variant="success" duration={3000} />}
-      {deleteState === "fail" && <Alert message="There was a problem creating the new agent" variant="danger" duration={5000} />}
-      <h3 style={{ textAlign: "center" }}>Agents</h3>
-      <table className="table table-striped" style={{ marginTop: 20 }}>
+      <hr style={{ margin: "0px auto", width: "100%", borderWidth: "3px", color: "#0a65a0" }} />
+      {deleteState === "success" && <Alert message="You successfully deleted an agent!" variant="success" duration={3000} onClose={() => setDeleteState("undefined")} />}
+      {deleteState === "fail" && <Alert message="There was a problem deleting this agent" variant="danger" duration={3000} onClose={() => setDeleteState("undefined")} />}
+      <h3 style={{ textAlign: "center", color: "#0a65a0" }}>Agents</h3>
+      <table className="table table-striped" style={{ marginTop: "20px" }}>
         <thead>
           <tr>
             <th>First Name</th>
@@ -112,6 +122,9 @@ export default function AgentsList() {
         </thead>
         <tbody>{agentList()}</tbody>
       </table>
+      <Button variant="primary" onClick={() => navigate("/admin/create")} style={{ position: "relative", left: "46%" }}>
+        Create agent
+      </Button>
     </div>
   );
 }

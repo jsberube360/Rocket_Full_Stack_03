@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import {useNavigate } from "react-router";
 import Alert from "./alert";
 export default function Create() {
   const [form, setForm] = useState({
@@ -11,6 +12,7 @@ export default function Create() {
     sales: 0,
   });
   const [creationState, setCreationState] = useState("undefined")
+  const navigate = useNavigate ();
   // These methods will update the state properties.
   function updateForm(value) {
     return setForm((prev) => {
@@ -40,9 +42,10 @@ export default function Create() {
   // This following section will display the form that takes the input from the user.
   return (
     <div>
-      {creationState === "success" && <Alert message="You successfully created a new agent! You will be redirected shortly!" variant="success" duration={3000} />}
-      {creationState === "fail" && <Alert message="There was a problem creating the new agent" variant="danger" duration={5000} />}
-      <h3 style={{ textAlign: "center" }}>Create New Agent</h3>
+      <hr style={{ margin: "0px auto", width:"100%", borderWidth: "3px" , color: "#0a65a0" }}/>
+      {creationState === "success" && <Alert message="You successfully created a new agent! You will be redirected shortly!" variant="success" duration={3000} onClose={()=>navigate("/admin/list")} />}
+      {creationState === "fail" && <Alert message="There was a problem creating the new agent" variant="danger" duration={5000} onClose={()=>setCreationState("undefined")} />}
+      <h3 style={{ textAlign: "center", color:"#0a65a0" }}>Create New Agent</h3>
       <form onSubmit={onSubmit}>
         <div className="form-group">
           <label htmlFor="first_name">First Name</label>

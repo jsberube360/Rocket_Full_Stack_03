@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router";
 import Alert from "./alert";
+import Modal from './modal';
 export default function Edit() {
   const [form, setForm] = useState({
     first_name: "",
@@ -12,28 +13,39 @@ export default function Edit() {
     sales: 0,
   });
   const [updateState, setUpdateState] = useState ("undefined")
+  const [showModal, setShowModal] = useState(false);
+  const onFormSubmit = (e) => {
+    e.preventDefault();
+    setShowModal(true);
+  };
+  const handleCloseModal = () => {
+    console.log("close")
+    setShowModal(false);
+  };
   const params = useParams();
   const navigate = useNavigate();
   useEffect(() => {
     async function fetchData() {
       const id = params.id.toString();
       const headers = { "authorization": "Bearer " + localStorage.getItem("token") }
-      const response = await fetch(`http://localhost:5000/agents/${params.id.toString()}`, {
-        method: "GET",
-        headers: headers
-      });
-      if (!response.ok) {
-        const message = `An error has occurred: ${response.statusText}`;
-        window.alert(message);
+      try {
+        const response = await fetch(`http://localhost:5000/agents/${params.id.toString()}`, {
+          method: "GET",
+          headers: headers
+        });
+        const agent = await response.json();
+        if (!agent) {
+          window.alert(`Agent with id ${id} not found`);
+          navigate("/admin/list");
+          return;
+        }
+        setForm(agent);
+      }
+      catch (error) {
+        window.alert(error);
+        navigate("/admin/list");
         return;
       }
-      const agent = await response.json();
-      if (!agent) {
-        window.alert(`Agent with id ${id} not found`);
-        navigate("/admin");
-        return;
-      }
-      setForm(agent);
     }
     fetchData();
     return;
@@ -44,8 +56,7 @@ export default function Edit() {
       return { ...prev, ...value };
     });
   }
-  async function onSubmit(e) {
-    e.preventDefault();
+  async function onEditConfirmed() {
     const editedAgent = {
       first_name: form.first_name,
       last_name: form.last_name,
@@ -56,27 +67,41 @@ export default function Edit() {
       sales: form.sales,
     };
     // This will send a post request to update the data in the database.
-    await fetch(`http://localhost:5000/agents/${params.id}`, {
-      method: "POST",
-      headers: {
-        "authorization": "Bearer " + localStorage.getItem("token"), "Content-Type": "application/json",
-      },
-      body: JSON.stringify(editedAgent),
-    })
-      .catch(error => {
-        setUpdateState("fail")
-        console.log(error)
-        return;
-      });
-    setUpdateState("success")
+    try {
+      await fetch(`http://localhost:5000/agents/${params.id}`, {
+        method: "POST",
+        headers: {
+          "authorization": "Bearer " + localStorage.getItem("token"), "Content-Type": "application/json",
+        },
+        body: JSON.stringify(editedAgent),
+      })
+      
+      setUpdateState("success")
+    }
+
+    catch (error) {
+      setUpdateState("fail")
+      console.log(error)
+    }
+    handleCloseModal()
+
   }
   // This following section will display the form that takes input from the user to update the data.
   return (
     <div>
-      {updateState === "success" && <Alert message="You successfully updated this agent! You will be redirected shortly!" variant="success" duration={3000} />}
-      {updateState === "fail" && <Alert message="There was a problem updating this agent" variant="danger" duration={5000} />}
-      <h3 style={{ textAlign: "center" }}>Update Agent</h3>
-      <form onSubmit={onSubmit}>
+      <hr style={{ margin: "0px auto", width:"100%", borderWidth: "3px" , color: "#0a65a0" }}/>
+      {updateState === "success" && <Alert message="You successfully updated this agent! You will be redirected shortly!" variant="success" duration={3000} onClose={()=>navigate("/admin/list")} />}
+      {updateState === "fail" && <Alert message="There was a problem updating this agent" variant="danger" duration={5000} onClose={()=>setUpdateState("undefined")} />}
+      <Modal 
+        showModal={showModal} 
+        handleClose={handleCloseModal} 
+        message="Are you sure you want to update this agent?" 
+        title="Update agent" 
+        action="Confirm update" 
+        handleAction= {onEditConfirmed} 
+      />
+      <h3 style={{ textAlign: "center", color:"#0a65a0" }}>Update Agent</h3>
+      <form onSubmit={ onFormSubmit }>
         <div className="form-group">
           <label htmlFor="first_name">First Name</label>
           <input
