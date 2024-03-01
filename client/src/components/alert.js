@@ -21,7 +21,9 @@ const CustomAlert = ({ duration, variant, message, onClose }) => {
     return (
         <>
             {showAlert && <Alert variant={variant} onClose={() => setShowAlert(false)}>
-                <p>{message} </p>
+                <div className="d-flex align-items-center" style={{ height: '1px', margin: "0px auto"}}>
+                    {message} 
+                </div>
 
 
             </Alert>}

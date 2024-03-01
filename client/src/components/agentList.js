@@ -13,7 +13,7 @@ const Agent = (props) => {
     setShowModal(false);
   };
   const modalDeleteAgent = () => {
-    props.deleteAgent ()
+    props.deleteAgent()
     handleCloseModal()
   }
   return (
@@ -46,7 +46,7 @@ const Agent = (props) => {
     </tr>
   );
 }
-const headers = { "authorization": "Bearer " + localStorage.getItem("token") }
+
 
 export default function AgentsList() {
   const [agents, setAgents] = useState([]);
@@ -56,17 +56,15 @@ export default function AgentsList() {
   // This method fetches the records from the database.
   useEffect(() => {
     async function getAgents() {
-      const response = await fetch(`http://localhost:5000/agents`, {
-        method: "GET",
-        headers: headers,
-      });
-      if (!response.ok) {
-        const message = `An error occurred: ${response.statusText}`;
-        window.alert(message);
+      try {
+        const response = await fetch("http://localhost:5000/agents")
+        const agents = await response.json();
+        setAgents(agents);
+      }
+      catch (error) {
+        window.alert(error);
         return;
       }
-      const agents = await response.json();
-      setAgents(agents);
     }
     getAgents();
     return;
@@ -76,7 +74,9 @@ export default function AgentsList() {
     try {
       await fetch(`http://localhost:5000/agents/${id}`, {
         method: "DELETE",
-        headers: headers,
+        headers: {
+          "Content-Type": "application/json"
+        },
       })
       const newAgents = agents.filter((el) => el._id !== id);
       setDeleteState("success")
@@ -103,11 +103,11 @@ export default function AgentsList() {
   // This following section will display the table with the agents.
   return (
     <div>
-      <hr style={{ margin: "0px auto", width: "100%", borderWidth: "3px", color: "#0a65a0" }} />
+       <hr style={{ margin: "0px auto", width: "100%", borderWidth: "3px", color: "#0a65a0", marginBottom: "15px" }} />
       {deleteState === "success" && <Alert message="You successfully deleted an agent!" variant="success" duration={3000} onClose={() => setDeleteState("undefined")} />}
-      {deleteState === "fail" && <Alert message="There was a problem deleting this agent" variant="danger" duration={3000} onClose={() => setDeleteState("undefined")} />}
-      <h3 style={{ textAlign: "center", color: "#0a65a0" }}>Agents</h3>
-      <table className="table table-striped" style={{ marginTop: "20px" }}>
+      {deleteState === "fail" && <Alert message="There was a problem deleting this agent" variant="danger" duration={5000} onClose={() => setDeleteState("undefined")} />}
+      <h1 style={{ textAlign: "center", color: "#0a65a0", marginBottom: "20px" }}>Agents</h1>
+      <table className="table table-striped">
         <thead>
           <tr>
             <th>First Name</th>

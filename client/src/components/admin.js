@@ -18,10 +18,12 @@ export default function AdminPage() {
                     <Col>
                         <Card title="Agents list"
                             text="Grid that summarizes the most important informations on all our agents such as rating, fees, sales, email, etc."
-                            src=""
+                            src="businessman.jpg"
+                            width="300px"
+                            height="450px"
                             variant="danger"
                             button="View"
-                            top="70%"
+                            top="2%"
                             left="0%"
                             action={()=>navigate("/admin/list")}
                         ></Card>
@@ -29,10 +31,12 @@ export default function AdminPage() {
                     <Col>
                         <Card title="Transaction table"
                             text="Table that shows you the amount of the last 10 transactions made by our agents and who made them."
-                            src=""
+                            src="transaction.png"
+                            width="300px"
+                            height="450px"
                             variant="danger"
                             button="View"
-                            top="70%"
+                            top="2%"
                             left="10%"
                             action={()=>navigate("/admin/transaction")}
                         ></Card>

@@ -1,13 +1,18 @@
+// imports 
 import React, { useState } from "react";
-import Alert from "./alert"
+import Alert from "./alert";
 import { useNavigate } from "react-router";
+import { jwtDecode } from "jwt-decode"
+
+// login page
+
 export default function Login() {
     const [form, setForm] = useState({
         email: "",
         password: "",
     });
     const [loginState, setLoginState]  = useState ("undefined")
-    // These methods will update the state properties.
+    // Tupdate the state properties of the login form
     function updateForm(value) {
         return setForm((prev) => {
         return { ...prev, ...value };
@@ -17,7 +22,8 @@ export default function Login() {
     const navigate = useNavigate();
     async function onSubmit (e) {
         e.preventDefault()
-        const response = await fetch ("http://localhost:5000/auth/login", {
+        // When a post request is sent to verify if the user exists in the database, receives a token
+        const response = await fetch ("http://localhost:5000/authenticate", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -27,6 +33,9 @@ export default function Login() {
         if (response.status === 200) {
             const token = await response.json()
             localStorage.setItem("token", token["access_token"])
+            const accessTokendDecoded = jwtDecode(localStorage.getItem("token"))
+            const userId = accessTokendDecoded["user_id"]
+            localStorage.setItem("userId", userId)
             setLoginState ("success")
             
         }
@@ -41,10 +50,10 @@ export default function Login() {
     // This following section will display the form that takes input from the user to update the data.
     return (
         <div>
-            <hr style={{ margin: "0px auto", width:"100%", borderWidth: "3px" , color: "#0a65a0" }}/>
-            {loginState === "success" && <Alert message="Successfully connected! You will be redirected shortly!" variant="success" duration={3000}/>}
-            {loginState === "fail" && <Alert message="Invalid password" variant="danger" duration={5000} />}
-            <h3 style={{ textAlign: "center", color:"#0a65a0" }}>Login</h3>
+            <hr style={{ margin: "0px auto", width: "100%", borderWidth: "3px", color: "#0a65a0", marginBottom: "15px" }} />
+            {loginState === "success" && <Alert message="Successfully connected! You will be redirected shortly!" variant="success" duration={3000} onClose={()=>navigate("/admin")}/>}
+            {loginState === "fail" && <Alert message="Invalid password" variant="danger" duration={3000} onClose={()=>setLoginState("undefined")}/>}
+            <h1 style={{ textAlign: "center", color: "#0a65a0", marginBottom: "20px" }}>Login</h1>
             <form onSubmit={onSubmit} style={{ textAlign: "center"}} >
                 <div className="form-group" >
                     <label htmlFor="email">Email</label>
