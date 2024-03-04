@@ -1,4 +1,4 @@
-const mongoose = require('mongoose')
+const mongoose = require("mongoose");
 
 const AgentSchema = new mongoose.Schema({
     first_name: {
@@ -45,5 +45,5 @@ const AgentSchema = new mongoose.Schema({
 })
 
 
-const Agent = mongoose.model('Agent', AgentSchema)
-module.exports = Agent
+const Agent = mongoose.model('Agent', AgentSchema);
+module.exports = Agent;

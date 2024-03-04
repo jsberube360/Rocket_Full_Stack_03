@@ -1,5 +1,10 @@
+// imports
 import React, { useState } from "react";
-import { useNavigate } from "react-router";
+import {useNavigate } from "react-router";
+import Alert from "./alert";
+
+// create page
+
 export default function Create() {
   const [form, setForm] = useState({
     first_name: "",
@@ -10,37 +15,48 @@ export default function Create() {
     fee: 0,
     sales: 0,
   });
-  const navigate = useNavigate();
-  // These methods will update the state properties.
+  const [creationState, setCreationState] = useState("undefined")
+  const navigate = useNavigate ();
+  // update the state properties of the create form
   function updateForm(value) {
     return setForm((prev) => {
       return { ...prev, ...value };
     });
   }
-  // This function will handle the submission.
+  // handle the functions when the for is submitted
   async function onSubmit(e) {
     e.preventDefault();
-    // When a post request is sent to the create url, we'll add a new agent to the database.
+    // When a post request is sent to the create url, we'll add a new agent to the database
     const newAgent = { ...form };
-    await fetch("http://localhost:5000/agents", {
-      method: "POST",
-      headers: {
-        "authorization": "Bearer " + localStorage.getItem("token"), "Content-Type": "application/json",
-      },
-      body: JSON.stringify(newAgent),
-    })
-      .catch(error => {
-        window.alert(error);
-        return;
-      });
+    try {
+      const response = await fetch("http://localhost:5000/agents", {
+        method: "POST",
+        headers: {
+          "authorization": "Bearer " + localStorage.getItem("token"), "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newAgent),
+      })
+      if (response.status !== 200) {
+        throw {error: "Bad status code"}
+      }
+      setCreationState("success")
+    }
+    catch (error) {
+      setCreationState("fail")
+      console.log(error)
+      return;
+    }
     setForm({ first_name: "", last_name: "", email: "", region: "", rating: 0, fee: 0, sales: 0, });
-    navigate("/admin");
+    
   }
   // This following section will display the form that takes the input from the user.
   return (
     <div>
-      <h3 style={{ textAlign: "center" }}>Create New Agent</h3>
-      <form onSubmit={onSubmit}>
+      <hr style={{ margin: "0px auto", width: "100%", borderWidth: "3px", color: "#0a65a0", marginBottom: "15px" }} />
+      {creationState === "success" && <Alert message="You successfully created a new agent! You will be redirected shortly!" variant="success" duration={3000} onClose={()=>navigate("/admin/list")} />}
+      {creationState === "fail" && <Alert message="There was a problem creating the new agent" variant="danger" duration={5000} onClose={()=>setCreationState("undefined")} />}
+      <h1 style={{ textAlign: "center", color: "#0a65a0", marginBottom: "20px" }}>Create new agent</h1>
+      <form onSubmit={onSubmit} style={{ marginLeft: "5px", marginRight: "5px" }}>
         <div className="form-group">
           <label htmlFor="first_name">First Name</label>
           <input
